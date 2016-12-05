@@ -1,8 +1,8 @@
 function cell_combin = combine_cell_tab(cell_master,cell_slave,opt)
-% Search and Combine matching cell table's rows ( One master celll table and one slave)
+% Merging cell table's rows ( One master celll table and one slave)
 %
 % SYNTAX:
-% CSV_CELL_COMBINE = COMBINE_CELL_TAB(CELL_MASTER,CELL_SLAVE,OPT)
+% CSV_CELL_MERGE = MERGE_CELL_TAB(CELL_MASTER,CELL_SLAVE,OPT)
 %
 % _________________________________________________________________________
 % INPUTS:
@@ -17,13 +17,13 @@ function cell_combin = combine_cell_tab(cell_master,cell_slave,opt)
 %   (structure, optional) with the following fields:
 %
 %   HEADER
-%       (boolean, default true) the first rows are the table's headers.
+%       (boolean, default true) if true the first row are the table's headers.
 %
-%   COMBINE_MASTER_COLOMN
-%       (number, default '1') choose wich colomn to use as reference for combininng with salve.
+%   COMBINE_MASTER_COLUMN
+%       (number, default '1') The master column index to use as reference for merging.
 %
 %   COMBINE_SLAVE_COLOMN
-%       (number, default '1') choose wich colomn to use as reference for combininng with master.
+%       (number, default '1') The slave column index to use as reference for merging.
 %
 % _________________________________________________________________________
 % OUTPUTS:
@@ -81,6 +81,7 @@ else
 end
 
 % Loop over ID's and combine master with slave
+fprintf('merging master cell tab "%s" with slave cell tab "%s":\n', inputname(1),inputname(2));
 cell_combin = cell(size(cell_master,1),size(cell_slave,2)+size(cell_master,2));
 n_shift = 0;
 for n_cell_master = 2:size(cell_master(1:end,opt.combine_master_colomn),1)
