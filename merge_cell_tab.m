@@ -1,8 +1,8 @@
-function cell_combin = combine_cell_tab(cell_master,cell_slave,opt)
+function cell_merge = merge_cell_tab(cell_master,cell_slave,opt)
 % Merging cell table's rows ( One master celll table and one slave)
 %
 % SYNTAX:
-% CSV_CELL_MERGE = MERGE_CELL_TAB(CELL_MASTER,CELL_SLAVE,OPT)
+% CELL_MERGE = MERGE_CELL_TAB(CELL_MASTER,CELL_SLAVE,OPT)
 %
 % _________________________________________________________________________
 % INPUTS:
@@ -19,18 +19,18 @@ function cell_combin = combine_cell_tab(cell_master,cell_slave,opt)
 %   HEADER
 %       (boolean, default true) if true the first row are the table's headers.
 %
-%   COMBINE_MASTER_COLUMN
+%   MERGE_MASTER_COLUMN
 %       (number, default '1') The master column index to use as reference for merging.
 %
-%   COMBINE_SLAVE_COLOMN
+%   MERGE_SLAVE_COLOMN
 %       (number, default '1') The slave column index to use as reference for merging.
 %
 % _________________________________________________________________________
 % OUTPUTS:
 %
-% CELL_COMBINE
+% CELL_MERGE
 %   (cell of strings) CELL{i,j} is a string corresponding to the ith row
-%   and jth column of the Master cell tab combined with the corresponding ith row
+%   and jth column of the Master cell tab merged with the corresponding ith row
 %   and jth column of the Slave cell tab.
 %
 % _________________________________________________________________________
@@ -72,7 +72,7 @@ if ~exist('cell_master','var')||~exist('cell_slave','var')
 end
 
 %% Set default options
-list_fields   = {'header' , 'combine_master_colomn' , 'combine_slave_colomn' };
+list_fields   = {'header' , 'merge_master_colomn' , 'merge_slave_colomn' };
 list_defaults = { true    , 1                       , 1                      };
 if nargin == 2
    opt = psom_struct_defaults(struct(),list_fields,list_defaults);
@@ -80,30 +80,30 @@ else
    opt = psom_struct_defaults(opt,list_fields,list_defaults);
 end
 
-% Loop over ID's and combine master with slave
+% Loop over ID's and merge master with slave
 fprintf('merging master cell tab "%s" with slave cell tab "%s":\n', inputname(1),inputname(2));
-cell_combin = cell(size(cell_master,1),size(cell_slave,2)+size(cell_master,2));
+cell_merge = cell(size(cell_master,1),size(cell_slave,2)+size(cell_master,2));
 n_shift = 0;
-for n_cell_master = 2:size(cell_master(1:end,opt.combine_master_colomn),1)
-    niak_progress( n_cell_master , length(cell_master(1:end,opt.combine_master_colomn)))
+for n_cell_master = 2:size(cell_master(1:end,opt.merge_master_colomn),1)
+    niak_progress( n_cell_master , length(cell_master(1:end,opt.merge_master_colomn)))
     n_rep = 0;
-    for n_cell_slave = 2:size(cell_slave(1:end,opt.combine_slave_colomn),1)
-        subj_match = strfind(cell_master{n_cell_master,opt.combine_master_colomn},char(cell_slave{n_cell_slave,opt.combine_slave_colomn}));
+    for n_cell_slave = 2:size(cell_slave(1:end,opt.merge_slave_colomn),1)
+        subj_match = strfind(cell_master{n_cell_master,opt.merge_master_colomn},char(cell_slave{n_cell_slave,opt.merge_slave_colomn}));
         if ~isempty(subj_match)
            n_rep = n_rep + 1;
            if n_rep > 1 
               n_shift = n_shift + 1;
-              cell_combin(n_cell_master + n_shift,:) = [ cell_master(n_cell_master,:)  cell_slave(n_cell_slave,:) ];
+              cell_merge(n_cell_master + n_shift,:) = [ cell_master(n_cell_master,:)  cell_slave(n_cell_slave,:) ];
            else
-              cell_combin(n_cell_master + n_shift,:) = [ cell_master(n_cell_master,:)  cell_slave(n_cell_slave,:) ];
+              cell_merge(n_cell_master + n_shift,:) = [ cell_master(n_cell_master,:)  cell_slave(n_cell_slave,:) ];
            end
         end
     end
     if n_rep == 0
-    cell_combin(n_cell_master + n_shift ,:) = [ cell_master(n_cell_master,:) cell(size(cell_slave(n_cell_slave,:)))  ];
+    cell_merge(n_cell_master + n_shift ,:) = [ cell_master(n_cell_master,:) cell(size(cell_slave(n_cell_slave,:)))  ];
     end
 end
-cell_combin(cellfun(@isempty,cell_combin))=NaN;
+cell_merge(cellfun(@isempty,cell_merge))=NaN;
 
 % add tables headers
-cell_combin(1,:) = [ cell_master(1,:)  cell_slave(1,:) ];
+cell_merge(1,:) = [ cell_master(1,:)  cell_slave(1,:) ];
